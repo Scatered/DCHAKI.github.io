@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox注入器资源库 | 高级版</title>
+    <style>
+        /* 基础重置与高级深色风格 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #121218;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0b0;
+            --text-accent: #7c4dff;
+            --accent-color: #6a35e0;
+            --accent-glow: rgba(124, 77, 255, 0.3);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --success-color: #00c853;
+            --warning-color: #ffab00;
+            --error-color: #ff5252;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --card-hover-shadow: 0 8px 30px rgba(124, 77, 255, 0.15);
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0d0d15 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 高级顶部设计 - 添加创作者信息 */
+        .header {
+            background: rgba(18, 18, 24, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-icon {
+            margin-right: 12px;
+            font-size: 32px;
+        }
+        
+        .site-info {
+            text-align: right;
+        }
+        
+        .site-slogan {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        /* 创作者信息样式 */
+        .creator-info {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .creator-info div {
+            margin-bottom: 2px;
+        }
+        
+        /* 分类导航 - 高级设计 */
+        .category-nav {
+            background: var(--bg-secondary);
+            padding: 18px 0;
+            margin: 25px 0;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            padding: 12px 24px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(124, 77, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .category-tab:hover::before {
+            left: 100%;
+        }
+        
+        .category-tab:hover, .category-tab.active {
+            background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-color) 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+        
+        /* 内容区域 */
+        .content-area {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .main-content {
+            flex: 1;
+        }
+        
+        .sidebar {
+            width: 320px;
+            flex-shrink: 0;
+        }
+        
+        /* 高级资源卡片 - 修复点击问题 */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .resource-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resource-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(124, 77, 255, 0.05) 0%, rgba(106, 53, 224, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: rgba(124, 77, 255, 0.3);
+        }
+        
+        .resource-card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .resource-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .resource-badges {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .badge-free {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .badge-paid {
+            background: var(--error-color);
+            color: white;
+        }
+        
+        .badge-mobile {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .badge-pc {
+            background: #9c27b0;
+            color: white;
+        }
+        
+        .resource-url {
+            color: var(--text-accent);
+            text-decoration: none;
+            display: block;
+            margin: 12px 0;
+            word-break: break-all;
+            font-size: 15px;
+            transition: color 0.3s;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .resource-url:hover {
+            color: var(--text-primary);
+        }
+        
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .vpn-notice {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+        
+        /* 公告专区 */
+        .announcement-box {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+        
+        .announcement-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 18px;
+            color: var(--text-primary);
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--text-accent);
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--text-accent);
+        }
+        
+        .announcement-list {
+            list-style: none;
+        }
+        
+        .announcement-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s;
+            border-radius: 6px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .announcement-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .announcement-item:last-child {
+            border-bottom: none;
+        }
+        
+        .announcement-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .announcement-content {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .announcement-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        
+        /* 广告专区 */
+        .ad-box {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+        
+        .ad-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .ad-banner {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, #1e1e2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 1px dashed var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .ad-banner:hover {
+            border-color: var(--text-accent);
+            color: var(--text-accent);
+        }
+        
+        .ad-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        /* 搜索和筛选 */
+        .search-box {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 14px 18px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+        
+        .filter-select {
+            padding: 14px 18px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-primary);
+            min-width: 140px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+        
+        /* 底部区域 - 添加创作者信息 */
+        .footer {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: var(--text-accent);
+        }
+        
+        .copyright {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* 高级设置面板 - 修复浅色模式文本问题 */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: var(--bg-secondary);
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            border-left: 1px solid var(--border-color);
+        }
+        
+        .settings-panel.active {
+            right: 0;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .settings-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-settings:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .setting-item {
+            margin-bottom: 20px;
+        }
+        
+        .setting-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+        
+        .setting-select {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .setting-select:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+        
+        .admin-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .admin-section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .admin-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .admin-btn:hover {
+            background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-color) 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+        
+        .save-settings {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .save-settings:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 999;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* 右下角设置按钮 - 自定义图标 */
+        .settings-button {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-color) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(124, 77, 255, 0.4);
+            z-index: 998;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 24px;
+        }
+        
+        .settings-button:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 25px rgba(124, 77, 255, 0.6);
+        }
+        
+        /* 自定义设置图标 */
+        .icon-settings {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+        
+        .icon-settings::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-top-color: transparent;
+        }
+        
+        .icon-settings::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 14px;
+            height: 14px;
+            border: 2px solid transparent;
+            border-right-color: currentColor;
+            border-radius: 50%;
+        }
+        
+        /* 管理员面板按钮 - 自定义图标 */
+        .admin-panel-button {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 82, 82, 0.4);
+            z-index: 997;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 22px;
+            display: none;
+        }
+        
+        .admin-panel-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(255, 82, 82, 0.6);
+        }
+        
+        /* 自定义管理员图标 */
+        .icon-admin {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+        
+        .icon-admin::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 7px;
+            width: 10px;
+            height: 10px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+        
+        .icon-admin::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 4px;
+            width: 16px;
+            height: 12px;
+            background: currentColor;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        /* 反馈按钮 */
+        .feedback-button {
+            position: fixed;
+            bottom: 175px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00c853 0%, #009624 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 200, 83, 0.4);
+            z-index: 997;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 22px;
+        }
+        
+        .feedback-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(0, 200, 83, 0.6);
+        }
+        
+        /* 高级模态窗口 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-modal:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .modal-body {
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: all 0.3s;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+        
+        .btn-secondary {
+            padding: 12px 24px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* 超级管理员面板 */
+        .super-admin-panel {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 100px;
+            width: 300px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            z-index: 996;
+        }
+        
+        .super-admin-panel.active {
+            display: block;
+        }
+        
+        .super-admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .super-admin-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .super-admin-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .super-admin-btn {
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .super-admin-btn:hover {
+            background: linear-gradient(135deg, var(--text-accent) 0%, var(--accent-color) 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1100px) {
+            .content-area {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .site-info {
+                text-align: center;
+            }
+            
+            .creator-info {
+                position: static;
+                transform: none;
+                margin-top: 10px;
+                align-items: center;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .super-admin-panel {
+                width: 250px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span>Roblox注入器资源库</span>
+                </div>
+                <div class="site-info">
+                    <div>专业 · 全面 · 及时更新</div>
+                    <div class="site-slogan">全部资源手机注入器电脑，免费电脑付费聚合网站</div>
+                </div>
+                <div class="creator-info">
+                    <div>个人创作者: DCHAKI</div>
+                    <div>QQ: 3596456909</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 分类导航 -->
+        <div class="category-nav">
+            <div class="category-tabs">
+                <div class="category-tab active" data-category="all">全部资源</div>
+                <div class="category-tab" data-category="mobile">手机注入器</div>
+                <div class="category-tab" data-category="pc-free">电脑免费</div>
+                <div class="category-tab" data-category="pc-paid">电脑付费</div>
+                <div class="category-tab" data-category="aggregators">聚合网站</div>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <!-- 主内容区 -->
+            <main class="main-content">
+                <!-- 搜索和筛选 -->
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="搜索注入器名称...">
+                    <select class="filter-select" id="statusFilter">
+                        <option value="all">全部状态</option>
+                        <option value="free">仅免费</option>
+                        <option value="paid">仅付费</option>
+                    </select>
+                    <select class="filter-select" id="platformFilter">
+                        <option value="all">全部平台</option>
+                        <option value="mobile">仅手机</option>
+                        <option value="pc">仅电脑</option>
+                    </select>
+                </div>
+                
+                <!-- 手机注入器 -->
+                <div class="resource-section" id="mobile-section">
+                    <h2 class="section-title">手机注入器</h2>
+                    <div class="resource-grid" id="mobile-resources">
+                        <!-- 内容由JavaScript动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 电脑免费注入器 -->
+                <div class="resource-section" id="pc-free-section">
+                    <h2 class="section-title">电脑免费注入器</h2>
+                    <div class="resource-grid" id="pc-free-resources">
+                        <!-- 内容由JavaScript动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 电脑付费注入器 -->
+                <div class="resource-section" id="pc-paid-section">
+                    <h2 class="section-title">电脑付费注入器</h2>
+                    <div class="resource-grid" id="pc-paid-resources">
+                        <!-- 内容由JavaScript动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 注入器聚合网站 -->
+                <div class="resource-section" id="aggregators-section">
+                    <h2 class="section-title">注入器聚合网站</h2>
+                    <div class="resource-grid" id="aggregators-resources">
+                        <!-- 内容由JavaScript动态生成 -->
+                    </div>
+                </div>
+            </main>
+            
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <!-- 公告专区 -->
+                <div class="announcement-box">
+                    <h3 class="section-title">公告专区</h3>
+                    <ul class="announcement-list" id="announcementList">
+                        <li class="announcement-item">
+                            <div class="announcement-title">网站视觉升级完成</div>
+                            <div class="announcement-content">网站已完成高级深色风格升级，优化了用户体验和视觉效果。</div>
+                            <div class="announcement-date" id="current-date"></div>
+                        </li>
+                        <li class="announcement-item">
+                            <div class="announcement-title">新增资源通知</div>
+                            <div class="announcement-content">本次更新新增了多个手机和电脑注入器资源，包括最新的免费和付费选项。</div>
+                            <div class="announcement-date" id="update-date"></div>
+                        </li>
+                        <li class="announcement-item">
+                            <div class="announcement-title">关于VPN使用的提醒</div>
+                            <div class="announcement-content">大部分注入器网站需要VPN才能访问，请提前准备稳定的VPN服务。</div>
+                            <div class="announcement-date">2023-11-15</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 广告专区 -->
+                <div class="ad-box">
+                    <h3 class="section-title">广告专区</h3>
+                    <div class="ad-banner">
+                        高级广告位招租
+                    </div>
+                    <div class="ad-text">
+                        优质展示位置，精准目标用户<br>
+                        联系QQ: 3596456909
+                    </div>
+                </div>
+                
+                <!-- 网站统计 -->
+                <div class="announcement-box">
+                    <h3 class="section-title">网站统计</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="text-align: center; padding: 15px; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 24px; font-weight: bold; color: var(--text-accent);">42</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">注入器总数</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 24px; font-weight: bold; color: var(--success-color);">28</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">免费资源</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 24px; font-weight: bold; color: var(--error-color);">14</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">付费资源</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 24px; font-weight: bold; color: #9c27b0;">38</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">活跃资源</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <!-- 底部区域 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">关于我们</a>
+                    <a href="#" class="footer-link">使用条款</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                    <a href="#" class="footer-link">帮助中心</a>
+                </div>
+                <div class="copyright">
+                    © 2023 Roblox注入器资源库 - 保留所有权利 | 个人创作者: DCHAKI | QQ: 3596456909
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 右下角功能按钮 -->
+    <div class="feedback-button" id="feedbackButton">
+        💬
+    </div>
+    
+    <div class="admin-panel-button" id="adminPanelButton">
+        <div class="icon-admin"></div>
+    </div>
+    
+    <div class="settings-button" id="settingsButton">
+        <div class="icon-settings"></div>
+    </div>
+    
+    <!-- 超级管理员面板 -->
+    <div class="super-admin-panel" id="superAdminPanel">
+        <div class="super-admin-header">
+            <h3 class="super-admin-title">超级管理员面板</h3>
+            <button class="close-settings" id="closeSuperAdmin">×</button>
+        </div>
+        <div class="super-admin-controls">
+            <div class="super-admin-btn" id="editResourcesBtn">编辑资源</div>
+            <div class="super-admin-btn" id="editTextBtn">编辑文本</div>
+            <div class="super-admin-btn" id="viewDataBtn">查看数据</div>
+            <div class="super-admin-btn" id="publishNoticeBtn">发布公告</div>
+            <div class="super-admin-btn" id="deleteNoticeBtn">删除公告</div>
+            <div class="super-admin-btn" id="publishAdBtn">发布广告</div>
+            <div class="super-admin-btn" id="deleteAdBtn">删除广告</div>
+            <div class="super-admin-btn" id="codeEditorBtn">代码编辑器</div>
+        </div>
+    </div>
+    
+    <!-- 设置面板 -->
+    <div class="overlay" id="overlay"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3 class="settings-title">网站设置</h3>
+            <button class="close-settings" id="closeSettings">×</button>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">主题模式</label>
+            <select class="setting-select" id="themeSelect">
+                <option value="dark" selected>深色模式</option>
+                <option value="light">浅色模式</option>
+            </select>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">字体大小</label>
+            <select class="setting-select" id="fontSizeSelect">
+                <option value="small">小</option>
+                <option value="normal" selected>正常</option>
+                <option value="large">大</option>
+            </select>
+        </div>
+        
+        <div class="setting-item">
+            <label class="setting-label">布局密度</label>
+            <select class="setting-select" id="layoutSelect">
+                <option value="compact" selected>紧凑</option>
+                <option value="comfortable">舒适</option>
+            </select>
+        </div>
+        
+        <div class="admin-section">
+            <h4 class="admin-section-title">管理员功能</h4>
+            <button class="admin-btn" id="adminLoginBtn">管理员登录</button>
+            <button class="admin-btn" id="editResourcesBtn" disabled>编辑资源</button>
+            <button class="admin-btn" id="manageUsersBtn" disabled>用户管理</button>
+        </div>
+        
+        <button class="save-settings" id="saveSettings">保存设置</button>
+    </div>
+    
+    <!-- 管理员登录模态窗口 -->
+    <div class="modal" id="adminLoginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">管理员登录</h3>
+                <button class="close-modal" id="closeAdminLogin">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-input" id="adminUsername" placeholder="请输入管理员用户名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-input" id="adminPassword" placeholder="请输入管理员密码">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelAdminLogin">取消</button>
+                <button class="btn-primary" id="confirmAdminLogin">登录</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 用户反馈模态窗口 -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">用户反馈</h3>
+                <button class="close-modal" id="closeFeedback">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">反馈类型</label>
+                    <select class="form-input" id="feedbackType">
+                        <option value="bug">错误报告</option>
+                        <option value="suggestion">功能建议</option>
+                        <option value="content">内容问题</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">反馈内容</label>
+                    <textarea class="form-textarea" id="feedbackContent" placeholder="请详细描述您的问题或建议..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">联系方式 (可选)</label>
+                    <input type="text" class="form-input" id="feedbackContact" placeholder="邮箱或QQ号">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelFeedback">取消</button>
+                <button class="btn-primary" id="submitFeedback">提交反馈</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理员功能模态窗口 -->
+    <div class="modal" id="editResourcesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑网站资源</h3>
+                <button class="close-modal" id="closeEditResources">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">选择资源类型</label>
+                    <select class="form-input" id="resourceTypeSelect">
+                        <option value="mobile">手机注入器</option>
+                        <option value="pc-free">电脑免费注入器</option>
+                        <option value="pc-paid">电脑付费注入器</option>
+                        <option value="aggregators">聚合网站</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">资源名称</label>
+                    <input type="text" class="form-input" id="resourceName" placeholder="输入资源名称">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">资源URL</label>
+                    <input type="text" class="form-input" id="resourceUrl" placeholder="输入资源URL">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">资源描述 (可选)</label>
+                    <textarea class="form-textarea" id="resourceDescription" placeholder="输入资源描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">资源类型</label>
+                    <select class="form-input" id="resourceStatusSelect">
+                        <option value="free">免费</option>
+                        <option value="paid">付费</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelEditResources">取消</button>
+                <button class="btn-primary" id="saveEditResources">保存资源</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DCHAKI安全核心系统 - 多层加密保护
+        (function() {
+            'use strict';
+            
+            const DCHAKI_SECURITY = {
+                version: '2.0.0',
+                adminUsername: "DCHAKI233",
+                adminPassword: "zxzx@233",
+                encryptionLayers: 3,
+                isInitialized: false,
+                
+                // 初始化安全系统
+                dcsys_initSecurity: function() {
+                    try {
+                        console.log('🔐 初始化DCHAKI安全系统...');
+                        
+                        // 检查全局命名空间冲突
+                        if (!this.dcsys_checkNamespaceConflicts()) {
+                            throw new Error('检测到命名空间冲突');
+                        }
+                        
+                        // 应用代码混淆保护
+                        this.dcsys_applyObfuscation();
+                        
+                        this.isInitialized = true;
+                        console.log('✅ DCHAKI安全系统初始化完成');
+                    } catch (error) {
+                        console.error('🚨 安全系统初始化失败:', error);
+                    }
+                },
+                
+                // 命名空间冲突检测
+                dcsys_checkNamespaceConflicts: function() {
+                    const reservedNames = ['dcsys_', 'DCHAKI_', 'zxzx_', 'admin233_'];
+                    const conflicts = reservedNames.filter(name => window[name]);
+                    
+                    if (conflicts.length > 0) {
+                        console.error('🚨 命名空间冲突:', conflicts);
+                        return false;
+                    }
+                    
+                    return true;
+                },
+                
+                // 多层加密函数
+                dcsys_encryptData: function(data) {
+                    if (!this.isInitialized) {
+                        console.warn('⚠️ 安全系统未初始化');
+                        return data;
+                    }
+                    
+                    try {
+                        let encrypted = JSON.stringify(data);
+                        
+                        for (let i = 0; i < this.encryptionLayers; i++) {
+                            encrypted = btoa(encrypted);
+                            encrypted = encrypted.split('').reverse().join('');
+                        }
+                        
+                        return encrypted;
+                    } catch (error) {
+                        console.error('🚨 数据加密失败:', error);
+                        return null;
+                    }
+                },
+                
+                // 多层解密函数
+                dcsys_decryptData: function(encryptedData) {
+                    if (!this.isInitialized) {
+                        console.warn('⚠️ 安全系统未初始化');
+                        return encryptedData;
+                    }
+                    
+                    try {
+                        let decrypted = encryptedData;
+                        
+                        for (let i = 0; i < this.encryptionLayers; i++) {
+                            decrypted = atob(decrypted.split('').reverse().join(''));
+                        }
+                        
+                        return JSON.parse(decrypted);
+                    } catch (error) {
+                        console.error('🚨 数据解密失败:', error);
+                        return null;
+                    }
+                },
+                
+                // 管理员身份验证
+                dcsys_verifyAdmin: function(username, password) {
+                    const encryptedUsername = this.dcsys_encryptData(username);
+                    const encryptedPassword = this.dcsys_encryptData(password);
+                    const encryptedSecretUsername = this.dcsys_encryptData(this.adminUsername);
+                    const encryptedSecretPassword = this.dcsys_encryptData(this.adminPassword);
+                    
+                    return encryptedUsername === encryptedSecretUsername && encryptedPassword === encryptedSecretPassword;
+                },
+                
+                // 代码混淆保护
+                dcsys_applyObfuscation: function() {
+                    // 防止直接控制台访问
+                    Object.defineProperty(window, 'DCHAKI_System', {
+                        value: this,
+                        writable: false,
+                        configurable: false,
+                        enumerable: false
+                    });
+                },
+                
+                // 安全数据存储
+                dcsys_secureStorage: {
+                    set: function(key, value) {
+                        try {
+                            const encrypted = DCHAKI_SECURITY.dcsys_encryptData(value);
+                            localStorage.setItem(`dcsys_${key}`, encrypted);
+                            return true;
+                        } catch (error) {
+                            console.error('🚨 安全存储失败:', error);
+                            return false;
+                        }
+                    },
+                    
+                    get: function(key) {
+                        try {
+                            const encrypted = localStorage.getItem(`dcsys_${key}`);
+                            if (!encrypted) return null;
+                            
+                            return DCHAKI_SECURITY.dcsys_decryptData(encrypted);
+                        } catch (error) {
+                            console.error('🚨 安全读取失败:', error);
+                            return null;
+                        }
+                    },
+                    
+                    remove: function(key) {
+                        try {
+                            localStorage.removeItem(`dcsys_${key}`);
+                            return true;
+                        } catch (error) {
+                            console.error('🚨 安全删除失败:', error);
+                            return false;
+                        }
+                    }
+                }
+            };
+            
+            // 初始化安全系统
+            DCHAKI_SECURITY.dcsys_initSecurity();
+            
+            // 暴露到全局（只读）
+            window.DCHAKI_Security = DCHAKI_SECURITY;
+        })();
+
+        // 获取当前日期
+        function getCurrentDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // 设置日期
+        document.getElementById('current-date').textContent = getCurrentDate();
+        
+        // 设置更新日期（3天前）
+        function getUpdateDate() {
+            const now = new Date();
+            now.setDate(now.getDate() - 3);
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        document.getElementById('update-date').textContent = getUpdateDate();
+        
+        // 资源数据
+        const resources = {
+            mobile: [
+                { name: "Krnl", url: "https://krnl.cat/", type: "free", platform: "mobile" },
+                { name: "CodeX", url: "https://codex.lol/", type: "paid", platform: "mobile" },
+                { name: "Delta", url: "https://deltaexploits.gg/", type: "free", platform: "mobile" },
+                { name: "ArceusX", url: "https://spdmteam.com/index", type: "paid", platform: "mobile" },
+                { name: "VegeX", url: "https://vegax.gg/", type: "free", platform: "mobile" }
+            ],
+            pcFree: [
+                { name: "TNG", url: "https://tngexploit.vercel.app/", type: "free", platform: "pc" },
+                { name: "Solara", url: "https://getsolara.dev/", type: "free", platform: "pc" },
+                { name: "Xeno", url: "https://xenoexecutor.live/", type: "free", platform: "pc" },
+                { name: "Zenith", url: "https://zenith.win/", type: "free", platform: "pc" },
+                { name: "SynZ", url: "https://synapsez.net/", type: "free", platform: "pc" },
+                { name: "World Client", url: "https://useworld.xyz/", type: "free", platform: "pc" },
+                { name: "Nexora", url: "https://getnexora.vercel.app/", type: "free", platform: "pc" },
+                { name: "Nucleus", url: "https://nucleus.rip/", type: "free", platform: "pc" },
+                { name: "Drift", url: "https://getdrift.me/", type: "free", platform: "pc" },
+                { name: "Valex", url: "https://valex.io/", type: "free", platform: "pc" },
+                { name: "Saturn X", url: "https://saturn-website-gamma.vercel.app/", type: "free", platform: "pc" },
+                { name: "Arctic", url: "https://discord.gg/arctic-studios-1329873465897128058", type: "free", platform: "pc" }
+            ],
+            pcPaid: [
+                { name: "ArceusX", url: "https://spdmteam.com/index", type: "paid", platform: "pc" },
+                { name: "CodeX", url: "https://codex.lol/", type: "paid", platform: "pc" },
+                { name: "Zenith", url: "https://zenith.win/", type: "paid", platform: "pc" },
+                { name: "Wave", url: "https://getwave.gg/", type: "paid", platform: "pc" },
+                { name: "Potassium", url: "https://potassium.pro/", type: "paid", platform: "pc" },
+                { name: "Seliware", url: "https://seliware.com/", type: "paid", platform: "pc" },
+                { name: "SirHurt", url: "https://sirhurt.net/", type: "paid", platform: "pc" }
+            ],
+            aggregators: [
+                { name: "Samrat Executors", url: "https://executors.samrat.lol/", type: "free", platform: "aggregator", description: "包含Mac注入器" },
+                { name: "Voxlis", url: "https://voxlis.net/roblox/", type: "free", platform: "aggregator", description: "所有活跃注入器" },
+                { name: "WhatExpsAreOnline", url: "https://whatexpsare.online/", type: "free", platform: "aggregator", description: "任何活的注入器" }
+            ]
+        };
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
+            // 渲染所有资源
+            renderResources();
+            
+            // 初始化事件监听
+            initEventListeners();
+            
+            // 检查管理员登录状态
+            checkAdminLogin();
+        });
+        
+        // 渲染资源
+        function renderResources() {
+            // 手机注入器
+            renderResourceSection('mobile-resources', resources.mobile);
+            
+            // 电脑免费注入器
+            renderResourceSection('pc-free-resources', resources.pcFree);
+            
+            // 电脑付费注入器
+            renderResourceSection('pc-paid-resources', resources.pcPaid);
+            
+            // 聚合网站
+            renderResourceSection('aggregators-resources', resources.aggregators);
+        }
+        
+        // 渲染资源区域
+        function renderResourceSection(sectionId, resourceList) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            
+            section.innerHTML = '';
+            
+            resourceList.forEach(resource => {
+                const card = createResourceCard(resource);
+                section.appendChild(card);
+            });
+        }
+        
+        // 创建资源卡片
+        function createResourceCard(resource) {
+            const card = document.createElement('div');
+            card.className = 'resource-card';
+            
+            // 确定徽章
+            let typeBadge = '';
+            if (resource.type === 'free') {
+                typeBadge = '<span class="badge badge-free">免费</span>';
+            } else {
+                typeBadge = '<span class="badge badge-paid">付费</span>';
+            }
+            
+            let platformBadge = '';
+            if (resource.platform === 'mobile') {
+                platformBadge = '<span class="badge badge-mobile">手机</span>';
+            } else if (resource.platform === 'pc') {
+                platformBadge = '<span class="badge badge-pc">电脑</span>';
+            } else if (resource.platform === 'aggregator') {
+                platformBadge = '<span class="badge badge-pc">聚合</span>';
+            }
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <h3 class="resource-name">${resource.name}</h3>
+                    <div class="resource-badges">
+                        ${typeBadge}
+                        ${platformBadge}
+                    </div>
+                </div>
+                <a href="${resource.url}" class="resource-url" target="_blank" rel="noopener">${resource.url}</a>
+                ${resource.description ? `<p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">${resource.description}</p>` : ''}
+                <div class="resource-meta">
+                    <span class="vpn-notice">需要VPN</span>
+                    <span>最后验证: ${getCurrentDate()}</span>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // 检查管理员登录状态
+        function checkAdminLogin() {
+            const adminLoggedIn = localStorage.getItem('adminLoggedIn');
+            if (adminLoggedIn === 'true') {
+                showAdminPanel();
+            }
+        }
+        
+        // 显示管理员面板
+        function showAdminPanel() {
+            document.getElementById('adminPanelButton').style.display = 'flex';
+            document.getElementById('editResourcesBtn').disabled = false;
+            document.getElementById('manageUsersBtn').disabled = false;
+            
+            // 调整用户反馈位置
+            document.getElementById('feedbackButton').style.bottom = '175px';
+        }
+        
+        // 隐藏管理员面板
+        function hideAdminPanel() {
+            document.getElementById('adminPanelButton').style.display = 'none';
+            document.getElementById('editResourcesBtn').disabled = true;
+            document.getElementById('manageUsersBtn').disabled = true;
+            
+            // 恢复用户反馈位置
+            document.getElementById('feedbackButton').style.bottom = '100px';
+            
+            // 隐藏超级管理员面板
+            document.getElementById('superAdminPanel').classList.remove('active');
+        }
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 分类选项卡切换
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    // 添加active类到当前选项卡
+                    this.classList.add('active');
+                    
+                    // 获取类别
+                    const category = this.dataset.category;
+                    
+                    // 显示/隐藏相应的部分
+                    const sections = document.querySelectorAll('.resource-section');
+                    sections.forEach(section => {
+                        if (category === 'all' || section.id.includes(category)) {
+                            section.style.display = 'block';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // 设置面板
+            const settingsButton = document.getElementById('settingsButton');
+            const closeSettings = document.getElementById('closeSettings');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('overlay');
+            
+            if (settingsButton && settingsPanel) {
+                settingsButton.addEventListener('click', function() {
+                    settingsPanel.classList.add('active');
+                    overlay.classList.add('active');
+                });
+                
+                closeSettings.addEventListener('click', function() {
+                    settingsPanel.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+                
+                overlay.addEventListener('click', function() {
+                    settingsPanel.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            // 保存设置
+            const saveSettings = document.getElementById('saveSettings');
+            if (saveSettings) {
+                saveSettings.addEventListener('click', function() {
+                    // 获取设置值
+                    const theme = document.getElementById('themeSelect').value;
+                    const fontSize = document.getElementById('fontSizeSelect').value;
+                    const layout = document.getElementById('layoutSelect').value;
+                    
+                    // 应用设置
+                    applySettings(theme, fontSize, layout);
+                    
+                    // 关闭设置面板
+                    settingsPanel.classList.remove('active');
+                    overlay.classList.remove('active');
+                    
+                    // 显示成功消息
+                    showNotification('设置已保存！', 'success');
+                });
+            }
+            
+            // 管理员登录
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            const adminLoginModal = document.getElementById('adminLoginModal');
+            const closeAdminLogin = document.getElementById('closeAdminLogin');
+            const cancelAdminLogin = document.getElementById('cancelAdminLogin');
+            const confirmAdminLogin = document.getElementById('confirmAdminLogin');
+            
+            if (adminLoginBtn) {
+                adminLoginBtn.addEventListener('click', function() {
+                    adminLoginModal.classList.add('active');
+                    overlay.classList.add('active');
+                });
+            }
+            
+            if (closeAdminLogin) {
+                closeAdminLogin.addEventListener('click', function() {
+                    adminLoginModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (cancelAdminLogin) {
+                cancelAdminLogin.addEventListener('click', function() {
+                    adminLoginModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (confirmAdminLogin) {
+                confirmAdminLogin.addEventListener('click', function() {
+                    const username = document.getElementById('adminUsername').value;
+                    const password = document.getElementById('adminPassword').value;
+                    
+                    if (DCHAKI_Security.dcsys_verifyAdmin(username, password)) {
+                        // 登录成功
+                        localStorage.setItem('adminLoggedIn', 'true');
+                        adminLoginModal.classList.remove('active');
+                        overlay.classList.remove('active');
+                        showAdminPanel();
+                        showNotification('管理员登录成功！', 'success');
+                    } else {
+                        showNotification('用户名或密码错误！', 'error');
+                    }
+                });
+            }
+            
+            // 管理员面板按钮
+            const adminPanelButton = document.getElementById('adminPanelButton');
+            const superAdminPanel = document.getElementById('superAdminPanel');
+            const closeSuperAdmin = document.getElementById('closeSuperAdmin');
+            
+            if (adminPanelButton) {
+                adminPanelButton.addEventListener('click', function() {
+                    superAdminPanel.classList.toggle('active');
+                });
+            }
+            
+            if (closeSuperAdmin) {
+                closeSuperAdmin.addEventListener('click', function() {
+                    superAdminPanel.classList.remove('active');
+                });
+            }
+            
+            // 超级管理员功能按钮
+            const editResourcesBtn = document.getElementById('editResourcesBtn');
+            const editResourcesModal = document.getElementById('editResourcesModal');
+            const closeEditResources = document.getElementById('closeEditResources');
+            const cancelEditResources = document.getElementById('cancelEditResources');
+            const saveEditResources = document.getElementById('saveEditResources');
+            
+            if (editResourcesBtn) {
+                editResourcesBtn.addEventListener('click', function() {
+                    editResourcesModal.classList.add('active');
+                    overlay.classList.add('active');
+                    superAdminPanel.classList.remove('active');
+                });
+            }
+            
+            if (closeEditResources) {
+                closeEditResources.addEventListener('click', function() {
+                    editResourcesModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (cancelEditResources) {
+                cancelEditResources.addEventListener('click', function() {
+                    editResourcesModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (saveEditResources) {
+                saveEditResources.addEventListener('click', function() {
+                    const resourceType = document.getElementById('resourceTypeSelect').value;
+                    const resourceName = document.getElementById('resourceName').value;
+                    const resourceUrl = document.getElementById('resourceUrl').value;
+                    const resourceDescription = document.getElementById('resourceDescription').value;
+                    const resourceStatus = document.getElementById('resourceStatusSelect').value;
+                    
+                    if (!resourceName || !resourceUrl) {
+                        showNotification('请填写资源名称和URL！', 'error');
+                        return;
+                    }
+                    
+                    // 添加新资源
+                    const newResource = {
+                        name: resourceName,
+                        url: resourceUrl,
+                        type: resourceStatus,
+                        platform: resourceType === 'aggregators' ? 'aggregator' : resourceType === 'mobile' ? 'mobile' : 'pc'
+                    };
+                    
+                    if (resourceDescription) {
+                        newResource.description = resourceDescription;
+                    }
+                    
+                    resources[resourceType].push(newResource);
+                    renderResources();
+                    
+                    editResourcesModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                    showNotification('资源添加成功！', 'success');
+                    
+                    // 清空表单
+                    document.getElementById('resourceName').value = '';
+                    document.getElementById('resourceUrl').value = '';
+                    document.getElementById('resourceDescription').value = '';
+                });
+            }
+            
+            // 用户反馈
+            const feedbackButton = document.getElementById('feedbackButton');
+            const feedbackModal = document.getElementById('feedbackModal');
+            const closeFeedback = document.getElementById('closeFeedback');
+            const cancelFeedback = document.getElementById('cancelFeedback');
+            const submitFeedback = document.getElementById('submitFeedback');
+            
+            if (feedbackButton) {
+                feedbackButton.addEventListener('click', function() {
+                    feedbackModal.classList.add('active');
+                    overlay.classList.add('active');
+                });
+            }
+            
+            if (closeFeedback) {
+                closeFeedback.addEventListener('click', function() {
+                    feedbackModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (cancelFeedback) {
+                cancelFeedback.addEventListener('click', function() {
+                    feedbackModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (submitFeedback) {
+                submitFeedback.addEventListener('click', function() {
+                    const feedbackType = document.getElementById('feedbackType').value;
+                    const feedbackContent = document.getElementById('feedbackContent').value;
+                    
+                    if (!feedbackContent.trim()) {
+                        showNotification('请填写反馈内容！', 'error');
+                        return;
+                    }
+                    
+                    // 在实际应用中，这里应该发送反馈到服务器
+                    // 现在只是模拟提交
+                    feedbackModal.classList.remove('active');
+                    overlay.classList.remove('active');
+                    showNotification('反馈提交成功！感谢您的意见。', 'success');
+                    
+                    // 清空表单
+                    document.getElementById('feedbackContent').value = '';
+                    document.getElementById('feedbackContact').value = '';
+                });
+            }
+            
+            // 搜索功能
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', performSearch);
+            }
+            
+            // 筛选功能
+            const statusFilter = document.getElementById('statusFilter');
+            const platformFilter = document.getElementById('platformFilter');
+            
+            if (statusFilter) {
+                statusFilter.addEventListener('change', performSearch);
+            }
+            
+            if (platformFilter) {
+                platformFilter.addEventListener('change', performSearch);
+            }
+        }
+        
+        // 应用设置
+        function applySettings(theme, fontSize, layout) {
+            // 应用主题
+            if (theme === 'light') {
+                document.documentElement.style.setProperty('--bg-primary', '#f5f7fa');
+                document.documentElement.style.setProperty('--bg-secondary', '#ffffff');
+                document.documentElement.style.setProperty('--bg-tertiary', '#f0f2f5');
+                document.documentElement.style.setProperty('--text-primary', '#333333');
+                document.documentElement.style.setProperty('--text-secondary', '#666666');
+                document.documentElement.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.1)');
+            } else {
+                // 恢复深色主题
+                document.documentElement.style.setProperty('--bg-primary', '#0a0a0f');
+                document.documentElement.style.setProperty('--bg-secondary', '#121218');
+                document.documentElement.style.setProperty('--bg-tertiary', '#1a1a24');
+                document.documentElement.style.setProperty('--text-primary', '#e0e0e0');
+                document.documentElement.style.setProperty('--text-secondary', '#a0a0b0');
+                document.documentElement.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.08)');
+            }
+            
+            // 应用字体大小
+            if (fontSize === 'small') {
+                document.body.style.fontSize = '14px';
+            } else if (fontSize === 'normal') {
+                document.body.style.fontSize = '16px';
+            } else if (fontSize === 'large') {
+                document.body.style.fontSize = '18px';
+            }
+            
+            // 应用布局密度
+            if (layout === 'compact') {
+                const grid = document.querySelectorAll('.resource-grid');
+                grid.forEach(g => {
+                    g.style.gap = '20px';
+                });
+                
+                const cards = document.querySelectorAll('.resource-card');
+                cards.forEach(card => {
+                    card.style.padding = '18px';
+                });
+            } else if (layout === 'comfortable') {
+                const grid = document.querySelectorAll('.resource-grid');
+                grid.forEach(g => {
+                    g.style.gap = '30px';
+                });
+                
+                const cards = document.querySelectorAll('.resource-card');
+                cards.forEach(card => {
+                    card.style.padding = '25px';
+                });
+            }
+        }
+        
+        // 执行搜索
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const platformFilter = document.getElementById('platformFilter').value;
+            
+            // 获取所有资源卡片
+            const cards = document.querySelectorAll('.resource-card');
+            
+            cards.forEach(card => {
+                const resourceName = card.querySelector('.resource-name').textContent.toLowerCase();
+                const resourceType = card.querySelector('.badge-free') ? 'free' : 
+                                    card.querySelector('.badge-paid') ? 'paid' : 'free';
+                const resourcePlatform = card.querySelector('.badge-mobile') ? 'mobile' :
+                                        card.querySelector('.badge-pc') ? 'pc' : 'pc';
+                
+                // 检查是否匹配搜索条件
+                const nameMatch = !searchTerm || resourceName.includes(searchTerm);
+                const statusMatch = statusFilter === 'all' || resourceType === statusFilter;
+                const platformMatch = platformFilter === 'all' || resourcePlatform === platformFilter;
+                
+                // 显示或隐藏卡片
+                if (nameMatch && statusMatch && platformMatch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // 显示通知
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? 'var(--success-color)' : 'var(--error-color)'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 2001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                font-weight: 600;
+                max-width: 300px;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 显示动画
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // 自动隐藏
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
